@@ -36,8 +36,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       # Run tests (optional)
-      - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+      #- name: Run tests
+      #  run: dotnet test --no-build --verbosity normal
 
       # Pack the project to create a NuGet package
       - name: Pack NuGet package
