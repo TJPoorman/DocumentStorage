@@ -1,0 +1,73 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.Infrastructure", "DocumentStorage.Infrastructure\DocumentStorage.Infrastructure.csproj", "{A690A652-CA9D-475B-A2F1-3394BBED93BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.Infrastructure.EntityFramework", "DocumentStorage.Infrastructure.EntityFramework\DocumentStorage.Infrastructure.EntityFramework.csproj", "{1E355FB4-F196-47CA-B81E-9073F6AC7F5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.Infrastructure.Tests", "DocumentStorage.Infrastructure.Tests\DocumentStorage.Infrastructure.Tests.csproj", "{63D308FA-A768-442D-AC04-715067752BCD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.Infrastructure.LiteDb", "DocumentStorage.Infrastructure.LiteDb\DocumentStorage.Infrastructure.LiteDb.csproj", "{459F7FE8-C3B1-4F3B-BC0E-7ED9B459088F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.DataGrid", "DocumentStorage.DataGrid\DocumentStorage.DataGrid.csproj", "{00F4749D-044F-4316-8D96-73B271FA52E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.DataGrid.EntityFrameworkConnector", "DocumentStorage.DataGrid.EntityFrameworkConnector\DocumentStorage.DataGrid.EntityFrameworkConnector.csproj", "{0C6BE7FA-B9AF-4F68-B533-9F456BA021AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.DataGrid.Tests", "DocumentStorage.DataGrid.Tests\DocumentStorage.DataGrid.Tests.csproj", "{F8B824F5-F7C8-4B73-9E76-37714130A742}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.DataGrid.LiteDbConnector", "DocumentStorage.DataGrid.LiteDbConnector\DocumentStorage.DataGrid.LiteDbConnector.csproj", "{3E4766F2-F6D6-418F-A579-211F291D1230}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStorage.Domain", "DocumentStorage.Domain\DocumentStorage.Domain.csproj", "{9B1ACFEB-F8C3-46FA-BC33-96A080559FC2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A690A652-CA9D-475B-A2F1-3394BBED93BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A690A652-CA9D-475B-A2F1-3394BBED93BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A690A652-CA9D-475B-A2F1-3394BBED93BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A690A652-CA9D-475B-A2F1-3394BBED93BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E355FB4-F196-47CA-B81E-9073F6AC7F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E355FB4-F196-47CA-B81E-9073F6AC7F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E355FB4-F196-47CA-B81E-9073F6AC7F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E355FB4-F196-47CA-B81E-9073F6AC7F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D308FA-A768-442D-AC04-715067752BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D308FA-A768-442D-AC04-715067752BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D308FA-A768-442D-AC04-715067752BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D308FA-A768-442D-AC04-715067752BCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{459F7FE8-C3B1-4F3B-BC0E-7ED9B459088F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{459F7FE8-C3B1-4F3B-BC0E-7ED9B459088F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{459F7FE8-C3B1-4F3B-BC0E-7ED9B459088F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{459F7FE8-C3B1-4F3B-BC0E-7ED9B459088F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F4749D-044F-4316-8D96-73B271FA52E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F4749D-044F-4316-8D96-73B271FA52E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F4749D-044F-4316-8D96-73B271FA52E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F4749D-044F-4316-8D96-73B271FA52E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C6BE7FA-B9AF-4F68-B533-9F456BA021AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C6BE7FA-B9AF-4F68-B533-9F456BA021AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C6BE7FA-B9AF-4F68-B533-9F456BA021AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C6BE7FA-B9AF-4F68-B533-9F456BA021AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8B824F5-F7C8-4B73-9E76-37714130A742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8B824F5-F7C8-4B73-9E76-37714130A742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8B824F5-F7C8-4B73-9E76-37714130A742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8B824F5-F7C8-4B73-9E76-37714130A742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E4766F2-F6D6-418F-A579-211F291D1230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E4766F2-F6D6-418F-A579-211F291D1230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E4766F2-F6D6-418F-A579-211F291D1230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E4766F2-F6D6-418F-A579-211F291D1230}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B1ACFEB-F8C3-46FA-BC33-96A080559FC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B1ACFEB-F8C3-46FA-BC33-96A080559FC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B1ACFEB-F8C3-46FA-BC33-96A080559FC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B1ACFEB-F8C3-46FA-BC33-96A080559FC2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95B697BF-9EB8-4E90-82A5-00F5F74A648C}
+	EndGlobalSection
+EndGlobal

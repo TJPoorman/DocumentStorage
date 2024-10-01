@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+        <Description>Common LiteDb models and interfaces used for Document Storage DataGrid</Description>
+        <Version>1.0.0</Version>
+        <PackageProjectUrl>https://github.com/TJPoorman/DocumentStorage</PackageProjectUrl>
+        <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright (c) TJPoorman 2024</Copyright>
+        <PackageTags>documentstorage;datamodels;nosql;relational;efcore;litedb;datastorage;repository;entityframework;datagrid;filtering;sorting;paging</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DocumentStorage.DataGrid\DocumentStorage.DataGrid.csproj" />
+        <ProjectReference Include="..\DocumentStorage.Infrastructure.LiteDb\DocumentStorage.Infrastructure.LiteDb.csproj" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
+</Project>
