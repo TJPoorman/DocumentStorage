@@ -1,0 +1,50 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up .NET Core SDK for .NET 6.0
+      - name: Set up .NET 6.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.x'
+
+      # Set up .NET Core SDK for .NET 8.0
+      - name: Set up .NET 8.0
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      # Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Build the project targeting both .NET 6.0 and .NET 8.0
+      - name: Build the project
+        run: dotnet build --configuration Release --no-restore
+
+      # Run tests (optional)
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
+
+      # Pack the project to create a NuGet package
+      - name: Pack NuGet package
+        run: dotnet pack --configuration Release --no-build --output ./nupkg
+
+      # Publish to NuGet
+      - name: Publish to NuGet
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
