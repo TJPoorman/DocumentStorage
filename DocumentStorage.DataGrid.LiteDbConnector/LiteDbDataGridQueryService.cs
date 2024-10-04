@@ -21,7 +21,7 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     where TContext : LiteDbContext
 {
     private readonly TContext _context;
-    private readonly LiteRepository _repository;
+    private readonly ILiteCollection<TRecord> _collection;
     private readonly int _maxLimit;
 
     /// <summary>
@@ -36,8 +36,7 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
 
         try
         {
-            _repository = _context.Set<TRecord>().LiteRepository;
-            _ = _repository.Database;    // Will throw argument null exception if connection string isn't valid.
+            _collection = _context.Set<TRecord>();
         }
         catch (ArgumentNullException exception)
         {
@@ -47,27 +46,18 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     }
 
     /// <inheritdoc/>
-    public async Task<DataGridResponse<TRecord>> QueryAsync(DataGridRequest<TRecord> request) => await QueryAsync(request, null);
-
-    /// <summary>
-    /// Asynchronously queries a data grid for a specified collection and request parameters.
-    /// </summary>
-    /// <typeparam name="T">The type of records being queried.</typeparam>
-    /// <param name="request">The data grid request containing filtering, sorting, and pagination details.</param>
-    /// <param name="collectionName">The name of the collection to query.</param>
-    /// <returns>A task representing the asynchronous operation, with a <see cref="DataGridResponse{T}"/> containing the results.</returns>
-    public async Task<DataGridResponse<T>> QueryAsync<T>(DataGridRequest<T> request, string collectionName)
+    public async Task<DataGridResponse<TRecord>> QueryAsync(DataGridRequest<TRecord> request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         List<BsonExpression> queries = new();
         queries.AddRange(GetFilters(request));
 
-        ILiteQueryable<T> queryable = _repository.Query<T>(collectionName);
+        ILiteQueryable<TRecord> queryable = _collection.Query();
 
         AddQueries();
 
-        DataGridResponse<T> response = new()
+        DataGridResponse<TRecord> response = new()
         {
             TotalRecordCount = queryable.Count(),
             TotalPageCount = queryable.Count() > 0 ? ((int)Math.Ceiling(((double)queryable.Count()) / request.Limit)) : 0
@@ -75,11 +65,11 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
 
         if (request?.Sorters?.Count == 1 && request?.Sorters[0] is SortClause sortClause)
         {
-            _repository.EnsureIndex<T>(sortClause.FieldName, $"LOWER($.{GetFieldName<T>(sortClause.FieldName)})");
+            _collection.EnsureIndex(sortClause.FieldName, $"LOWER($.{GetFieldName(sortClause.FieldName)})");
 
             int direction = sortClause.Direction == SortDirection.Descending ? Query.Descending : Query.Ascending;
 
-            queryable.OrderBy(GetFieldName<T>(sortClause.FieldName), direction);
+            queryable.OrderBy(GetFieldName(sortClause.FieldName), direction);
         }
 
         int limit = request.Limit == 0 ? _maxLimit : request.Limit;
@@ -108,13 +98,12 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Generates a field expression for querying based on the field name and value type.
     /// </summary>
-    /// <typeparam name="T">The type of the record.</typeparam>
     /// <param name="fieldNameOrId">The name of the field or ID to query.</param>
     /// <param name="value">The value associated with the field.</param>
     /// <returns>The generated field expression as a string.</returns>
-    private static string GetFieldExpression<T>(string fieldNameOrId, BsonValue value)
+    private static string GetFieldExpression(string fieldNameOrId, BsonValue value)
     {
-        string fieldName = GetFieldName<T>(fieldNameOrId);
+        string fieldName = GetFieldName(fieldNameOrId);
         if (value.IsString) return $"LOWER($.{fieldName})";
 
         if (fieldName.Contains('.')) fieldName = $"$.{fieldName}";
@@ -125,12 +114,11 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Retrieves the appropriate field name for a specified field identifier, considering attributes and naming conventions.
     /// </summary>
-    /// <typeparam name="T">The type of the record.</typeparam>
     /// <param name="fieldNameOrId">The field identifier to resolve.</param>
     /// <returns>The resolved field name as a string.</returns>
-    private static string GetFieldName<T>(string fieldNameOrId)
+    private static string GetFieldName(string fieldNameOrId)
     {
-        var bsonAttribute = typeof(T).GetProperty(fieldNameOrId)?.GetCustomAttribute<BsonFieldAttribute>();
+        var bsonAttribute = typeof(TRecord).GetProperty(fieldNameOrId)?.GetCustomAttribute<BsonFieldAttribute>();
         if (bsonAttribute is not null) return bsonAttribute.Name;
 
         string fieldName = fieldNameOrId
@@ -167,10 +155,9 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Constructs filter expressions based on the provided data grid request.
     /// </summary>
-    /// <typeparam name="T">The type of records in the request.</typeparam>
     /// <param name="request">The data grid request containing filter criteria.</param>
     /// <returns>A list of BsonExpression filters based on the request.</returns>
-    private List<BsonExpression> GetFilters<T>(DataGridRequest<T> request)
+    private List<BsonExpression> GetFilters(DataGridRequest<TRecord> request)
     {
         List<BsonExpression> filters = new();
 
@@ -186,16 +173,16 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
             }
             else
             {
-                string fieldName = GetFieldName<T>(filters[index].Fields.First());
+                string fieldName = GetFieldName(filters[index].Fields.First());
                 if (fieldName.Equals("_id")) continue;
 
                 if (fieldName == filters[index].Fields.First())
                 {
-                    _repository.EnsureIndex<T>(fieldName, $"LOWER($.{fieldName})");
+                    _collection.EnsureIndex(fieldName, $"LOWER($.{fieldName})");
                 }
                 else
                 {
-                    _repository.EnsureIndex<T>(fieldName, filters[index].Fields.First());
+                    _collection.EnsureIndex(fieldName, filters[index].Fields.First());
                 }
             }
         }
@@ -205,16 +192,15 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Retrieves "Contains" filters from the data grid request.
     /// </summary>
-    /// <typeparam name="T">The type of records in the request.</typeparam>
     /// <param name="request">The data grid request containing filter criteria.</param>
     /// <returns>An enumerable collection of BsonExpression filters for "Contains" criteria.</returns>
-    private static IEnumerable<BsonExpression> GetContainsFilters<T>(DataGridRequest<T> request) =>
+    private static IEnumerable<BsonExpression> GetContainsFilters(DataGridRequest<TRecord> request) =>
         (request?.Filters?
             .Where((f) => f is not null && f.FilterType == FilterType.Contains && f.Value is string)
             .Select((f) =>
             {
                 BsonValue bsonValue = GetBsonValue(f.Value);
-                string fieldExpression = GetFieldExpression<T>(f.FieldName, bsonValue);
+                string fieldExpression = GetFieldExpression(f.FieldName, bsonValue);
 
                 return Query.Contains(fieldExpression, bsonValue.AsString);
             })) ?? Enumerable.Empty<BsonExpression>();
@@ -222,10 +208,9 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Retrieves multi-value filters from the data grid request.
     /// </summary>
-    /// <typeparam name="T">The type of records in the request.</typeparam>
     /// <param name="request">The data grid request containing filter criteria.</param>
     /// <returns>An enumerable collection of BsonExpression filters for multi-value criteria.</returns>
-    private static IEnumerable<BsonExpression> GetMultiValueFilters<T>(DataGridRequest<T> request) =>
+    private static IEnumerable<BsonExpression> GetMultiValueFilters(DataGridRequest<TRecord> request) =>
         (request?.Filters?
             .Where((f) => f is not null && f.Value is not null && f.Value is not string && f.Value is IEnumerable && (f.FilterType == FilterType.Between || f.FilterType == FilterType.In))
             .Select((f) =>
@@ -241,7 +226,7 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
                     return null;
                 }
 
-                string fieldExpression = GetFieldExpression<T>(f.FieldName, values[0]);
+                string fieldExpression = GetFieldExpression(f.FieldName, values[0]);
 
                 return f.FilterType switch
                 {
@@ -254,10 +239,9 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
     /// <summary>
     /// Retrieves single-value filters from the data grid request.
     /// </summary>
-    /// <typeparam name="T">The type of records in the request.</typeparam>
     /// <param name="request">The data grid request containing filter criteria.</param>
     /// <returns>An enumerable collection of BsonExpression filters for single-value criteria.</returns>
-    private static IEnumerable<BsonExpression> GetSingleValueFilters<T>(DataGridRequest<T> request) =>
+    private static IEnumerable<BsonExpression> GetSingleValueFilters(DataGridRequest<TRecord> request) =>
         (request?.Filters?
             .Where((f) =>
                 f is not null && f.Value != null &&
@@ -268,7 +252,7 @@ public class LiteDbDataGridQueryService<TRecord, TContext> : IDataGridQueryServi
             .Select((f) =>
             {
                 BsonValue bsonValue = GetBsonValue(f.Value);
-                string fieldExpression = GetFieldExpression<T>(f.FieldName, bsonValue);
+                string fieldExpression = GetFieldExpression(f.FieldName, bsonValue);
 
                 return f.FilterType switch
                 {

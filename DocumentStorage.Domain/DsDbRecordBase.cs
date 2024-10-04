@@ -13,11 +13,11 @@ public class DsDbRecordBase : DsRecordBase, IDsDbRecord
     public virtual DateTimeOffset CreatedDateTime { get; set; } = DateTimeOffset.Now;
 
     /// <inheritdoc/>
-    public virtual string CreatedBy { get; set; }
+    public virtual string CreatedBy { get; set; } = string.Empty;
 
     /// <inheritdoc/>
     public virtual DateTimeOffset LastModifiedDateTime { get; set; } = DateTimeOffset.Now;
 
     /// <inheritdoc/>
-    public virtual string LastModifiedBy { get; set; }
+    public virtual string LastModifiedBy { get; set; } = string.Empty;
 }

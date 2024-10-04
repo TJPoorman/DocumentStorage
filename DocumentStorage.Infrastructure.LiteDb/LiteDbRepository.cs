@@ -44,18 +44,12 @@ public abstract class LiteDbRepository<TRecord, TContext> : IDsRepository<TRecor
     protected ILiteCollection<TRecord> Collection { get; }
 
     /// <summary>
-    /// The LiteDB repository object.
-    /// </summary>
-    protected LiteRepository Repository { get; }
-
-    /// <summary>
     /// Initializes a new instance of the repository with the provided database context.
     /// </summary>
     /// <param name="context">The database context to use.</param>
     protected LiteDbRepository(TContext context)
     {
         _context = context;
-        Repository = _context.Set<TRecord>().LiteRepository;
         Collection = GetCollection();
     }
 
@@ -79,7 +73,7 @@ public abstract class LiteDbRepository<TRecord, TContext> : IDsRepository<TRecor
     /// Retrieves the LiteDB collection for the current record type.
     /// </summary>
     /// <returns>The LiteDB collection of TRecord.</returns>
-    protected virtual ILiteCollection<TRecord> GetCollection() => Repository.Database.GetCollection<TRecord>();
+    protected virtual ILiteCollection<TRecord> GetCollection() => _context.Database.GetCollection<TRecord>();
 
     /// <summary>
     /// Retrieves a LiteDB record by its unique identifier, decrypting it if necessary.

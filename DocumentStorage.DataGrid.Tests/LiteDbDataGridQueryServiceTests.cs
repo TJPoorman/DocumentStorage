@@ -33,10 +33,10 @@ public class LiteDbDataGridQueryServiceTests : BaseTests
         _context.EnsureDeleted();
         _context.EnsureCreated();
 
-        _context.Set<Person>().LiteRepository.Insert(Person1);
+        _context.Set<Person>().Insert(Person1);
         foreach (Person person in People)
         {
-            _context.Set<Person>().LiteRepository.Insert(person);
+            _context.Set<Person>().Insert(person);
         }
 #endif
     }
