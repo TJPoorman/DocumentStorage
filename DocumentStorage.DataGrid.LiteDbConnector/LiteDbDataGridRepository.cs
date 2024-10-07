@@ -29,6 +29,6 @@ public abstract class LiteDbDataGridRepository<TRecord, TContext> : LiteDbReposi
     }
 
     /// <inheritdoc/>
-    public async Task<DataGridResponse<TRecord>> GetDataGridResponseAsync(DataGridRequest<TRecord> request) =>
+    public virtual async Task<DataGridResponse<TRecord>> GetDataGridResponseAsync(DataGridRequest<TRecord> request) =>
         await _dataGridQueryService.QueryAsync(new DataGridRequest<TRecord>(request)).ConfigureAwait(false);
 }

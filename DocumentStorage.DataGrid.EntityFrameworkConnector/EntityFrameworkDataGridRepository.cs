@@ -29,6 +29,6 @@ public abstract class EntityFrameworkDataGridRepository<TRecord, TContext> : Ent
     }
 
     /// <inheritdoc/>
-    public async Task<DataGridResponse<TRecord>> GetDataGridResponseAsync(DataGridRequest<TRecord> request) =>
+    public virtual async Task<DataGridResponse<TRecord>> GetDataGridResponseAsync(DataGridRequest<TRecord> request) =>
         await _dataGridQueryService.QueryAsync(new DataGridRequest<TRecord>(request)).ConfigureAwait(false);
 }
