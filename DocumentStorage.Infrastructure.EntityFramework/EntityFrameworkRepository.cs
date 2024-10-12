@@ -182,7 +182,7 @@ public abstract class EntityFrameworkRepository<TRecord, TContext> : IEntityFram
         ArgumentNullException.ThrowIfNull(record);
 
         TRecord existingRecord = _context.Set<TRecord>()
-            .FromSql($"SELECT TOP 1 * FROM [{RootRecordTableName.Value}] WHERE [{nameof(record.UniqueKey)}] = {record.UniqueKey}")
+            .FromSqlRaw($"SELECT TOP 1 * FROM [{RootRecordTableName.Value}] WHERE [{nameof(record.UniqueKey)}] = {{0}}", record.UniqueKey)
             .AsNoTracking()
             .FirstOrDefault();
 
