@@ -1,6 +1,8 @@
 ﻿using DocumentStorage.Infrastructure.Tests.DbContexts;
+using DocumentStorage.Infrastructure.Tests.Models;
 using DocumentStorage.Infrastructure.Tests.Repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 
 namespace DocumentStorage.Infrastructure.Tests;
@@ -41,6 +43,16 @@ public class LiteDbTests : BaseTests
         return r;
     }
 
+    protected override LiteDbGadgetRepository GetGadgetRepository()
+    {
+        if (_context == null) throw new AssertInconclusiveException("Unable to create DbContext.");
+
+        var r = new LiteDbGadgetRepository(_context);
+        r.InitializeAsync().Wait();
+
+        return r;
+    }
+
     [ClassInitialize]
     public static void ClassInitialize(TestContext testContext)
     {
@@ -51,15 +63,6 @@ public class LiteDbTests : BaseTests
 #endif
     }
 
-    [TestInitialize]
-    public async Task TestInitialize()
-    {
-        LiteDbFooRepository fooRepository = GetFooRepository();
-        await fooRepository.DeleteAsync(TestFoo.Id);
-        LiteDbWidgetRepository widgetRepository = GetWidgetRepository();
-        await widgetRepository.DeleteAsync(TestWidget.Id);
-    }
-
     [ClassCleanup]
     public static void ClassCleanup()
     {
@@ -67,5 +70,40 @@ public class LiteDbTests : BaseTests
         _context.EnsureDeleted();
 #endif
         _context?.Dispose();
+    }
+
+    [TestMethod]
+    public async Task Gadget_CanUpsertWithNullList()
+    {
+        try
+        {
+            var gadgetRepository = GetGadgetRepository();
+            await gadgetRepository.UpsertAsync(TestGadget1);
+            Gadget gadget = await gadgetRepository.GetAsync(TestGadget1.Id);
+
+            Assert.IsNotNull(gadget);
+        }
+        catch (Exception e)
+        {
+            Assert.Fail(e.Message);
+        }
+    }
+
+    [TestMethod]
+    public async Task Gadget_CanUpsertWithSimpleList()
+    {
+        try
+        {
+            var gadgetRepository = GetGadgetRepository();
+            await gadgetRepository.UpsertAsync(TestGadget2);
+            Gadget gadget = await gadgetRepository.GetAsync(TestGadget2.Id);
+
+            Assert.IsNotNull(gadget);
+            Assert.IsTrue(gadget.MyStringList.Count == 3);
+        }
+        catch (Exception e)
+        {
+            Assert.Fail(e.Message);
+        }
     }
 }

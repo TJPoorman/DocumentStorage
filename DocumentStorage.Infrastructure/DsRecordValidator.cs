@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace DocumentStorage.Infrastructure;
@@ -41,9 +42,12 @@ public static class DsRecordValidator
         }
 
         Type childType = enumerableType.GetGenericArguments()[0];
-        if (!typeof(IDsRecord).IsAssignableFrom(childType))
+        if (!IsAssemblyInCallStack("DocumentStorage.Infrastructure.LiteDb"))
         {
-            throw new InvalidOperationException($"Unable to update property of type '{enumerableType.Name}'.  Objects in collections must implement '{nameof(IDsRecord)}'.");
+            if (!typeof(IDsRecord).IsAssignableFrom(childType))
+            {
+                throw new InvalidOperationException($"Unable to update property of type '{enumerableType.Name}'.  Objects in collections must implement '{nameof(IDsRecord)}'.");
+            }
         }
 
         return childType;
@@ -98,5 +102,18 @@ public static class DsRecordValidator
         results.Reverse();
 
         return results.Count < 1;
+    }
+
+    private static bool IsAssemblyInCallStack(string assemblyName)
+    {
+        StackTrace stackTrace = new StackTrace();
+
+        foreach (StackFrame frame in stackTrace.GetFrames() ?? Array.Empty<StackFrame>())
+        {
+            Assembly? callingAssembly = frame.GetMethod()?.DeclaringType?.Assembly;
+            if (callingAssembly?.GetName().Name == assemblyName) return true;
+        }
+
+        return false;
     }
 }

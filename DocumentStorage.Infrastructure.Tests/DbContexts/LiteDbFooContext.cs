@@ -6,8 +6,8 @@ namespace DocumentStorage.Infrastructure.Tests.DbContexts;
 public class LiteDbFooContext : LiteDbContext
 {
     public LiteSet<Foo> FooRepository { get; set; }
-
     public LiteSet<Widget> WidgetRepository { get; set; }
+    public LiteSet<Gadget> GadgetRepository { get; set; }
 
     public LiteDbFooContext(LiteDbContextOptions options, IEncryptionProvider encryptionService) : base(options, encryptionService) { }
 }

@@ -48,6 +48,8 @@ public class EfTests : BaseTests
         return new WidgetRepository(_context);
     }
 
+    protected override GadgetRepository GetGadgetRepository() => null;
+
     [ClassInitialize]
     public static void ClassInitialize(TestContext testContext)
     {
@@ -56,15 +58,6 @@ public class EfTests : BaseTests
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
 #endif
-    }
-
-    [TestInitialize]
-    public async Task TestInitialize()
-    {
-        FooRepository fooRepository = GetFooRepository();
-        await fooRepository.DeleteAsync(TestFoo.Id);
-        WidgetRepository widgetRepository = GetWidgetRepository();
-        await widgetRepository.DeleteAsync(TestWidget.Id);
     }
 
     [ClassCleanup]

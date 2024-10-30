@@ -28,6 +28,37 @@ public abstract class BaseTests
         Name = "Widget1",
     };
 
+    protected static Widget TestWidget2 => new()
+    {
+        Id = new Guid("1ba1009d-8f39-4020-9b6b-550d0b843280"),
+        Name = "Widget2",
+    };
+
+    protected static Widget TestWidget3 => new()
+    {
+        Id = new Guid("9889d19b-0802-4874-a188-8392f09bc87d"),
+        Name = "Widget2",
+    };
+
+    protected static Gadget TestGadget1 => new()
+    {
+        Id = new Guid("778a0bf0-8e54-4676-b116-ca99bc3eb822"),
+        Name = "Gadget1",
+        MyStringList = null,
+    };
+
+    protected static Gadget TestGadget2 => new()
+    {
+        Id = new Guid("0a330ade-94c1-4e41-a176-8f2ba74c2e3a"),
+        Name = "Gadget2",
+        MyStringList = new()
+        {
+            "String1",
+            "String2",
+            "String3",
+        },
+    };
+
     protected static Foo TestFoo => new()
     {
         Id = new Guid("27d6ef9c-d126-48f2-aa6a-7e1ac77251a0"),
@@ -74,6 +105,25 @@ public abstract class BaseTests
     protected abstract IFooRepository GetFooRepository();
 
     protected abstract IDsRepository<Widget> GetWidgetRepository();
+
+    protected abstract IDsRepository<Gadget> GetGadgetRepository();
+
+    [TestInitialize]
+    public async Task TestInitialize()
+    {
+        IFooRepository fooRepository = GetFooRepository();
+        await fooRepository.DeleteAsync(TestFoo.Id);
+        IDsRepository<Widget> widgetRepository = GetWidgetRepository();
+        await widgetRepository.DeleteAsync(TestWidget.Id);
+        await widgetRepository.DeleteAsync(TestWidget2.Id);
+        await widgetRepository.DeleteAsync(TestWidget3.Id);
+        IDsRepository<Gadget> gadgetRepository = GetGadgetRepository();
+        if (gadgetRepository is not null)
+        {
+            await gadgetRepository.DeleteAsync(TestGadget1.Id);
+            await gadgetRepository.DeleteAsync(TestGadget2.Id);
+        }
+    }
 
     [TestMethod]
     public async Task Foo_AfterDeleteEventFires()
@@ -257,5 +307,22 @@ public abstract class BaseTests
                         }
                 }
             }));
+    }
+
+    [TestMethod]
+    public async Task Widget_CanUpsertUnique()
+    {
+        var widgetRepository = GetWidgetRepository();
+        await widgetRepository.UpsertAsync(TestWidget);
+        await widgetRepository.UpsertAsync(TestWidget2);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(DsUniqueDbRecordDuplicateException))]
+    public async Task Widget_CannotUpsertDuplicateUnique()
+    {
+        var widgetRepository = GetWidgetRepository();
+        await widgetRepository.UpsertAsync(TestWidget2);
+        await widgetRepository.UpsertAsync(TestWidget3);
     }
 }
