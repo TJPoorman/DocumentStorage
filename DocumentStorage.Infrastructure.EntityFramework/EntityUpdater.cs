@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -299,7 +300,7 @@ public class EntityUpdater<TContext> : IDsEntityUpdater
             object value = ConvertValueIfNeeded(sourceProperty.PropertyType, sourceValue, targetProperty.PropertyType);
 
             targetProperty.SetValue(target, value);
-            if (value is IDsRecord) _context.Entry(value).State = EntityState.Added;
+            if (value is IDsRecord && targetProperty.GetCustomAttribute(typeof(NotMappedAttribute)) is null) _context.Entry(value).State = EntityState.Added;
 
             return;
         }
