@@ -264,6 +264,23 @@ public abstract class BaseTests
     }
 
     [TestMethod]
+    public async Task Foo_CanAddChild()
+    {
+        var fooRepository = GetFooRepository();
+        await fooRepository.UpsertAsync(TestFoo);
+
+        Foo foo = await fooRepository.GetAsync(TestFoo.Id);
+
+        foo.AllBars.Add(new() { BarName = "NewChild", RequiredChild = new() { Name = "NewChildRequired" } });
+
+        await fooRepository.UpsertAsync(foo);
+
+        foo = await fooRepository.GetAsync(TestFoo.Id);
+
+        Assert.IsTrue(foo.AllBars.Any(b => b.BarName == "NewChild" && b.RequiredChild.Name == "NewChildRequired"));
+    }
+
+    [TestMethod]
     public async Task Foo_CanUpsert()
     {
         var fooRepository = GetFooRepository();

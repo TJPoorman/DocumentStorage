@@ -299,6 +299,7 @@ public class EntityUpdater<TContext> : IDsEntityUpdater
             object value = ConvertValueIfNeeded(sourceProperty.PropertyType, sourceValue, targetProperty.PropertyType);
 
             targetProperty.SetValue(target, value);
+            if (value is IDsRecord) _context.Entry(value).State = EntityState.Added;
 
             return;
         }
@@ -354,6 +355,7 @@ public class EntityUpdater<TContext> : IDsEntityUpdater
                     {
                         // Remove target items that don't exist in source.
                         Remove(targetChildType, targetChild);
+                        //_context.Entry(targetChild).State = EntityState.Deleted;
                     }
                 }
                 else
@@ -366,7 +368,10 @@ public class EntityUpdater<TContext> : IDsEntityUpdater
             // Add remaining target items to target.
             foreach (IDsRecord sourceChild in sourceChildren.Values)
             {
+                var newChild = Activator.CreateInstance(targetChildType) as IDsRecord;
+                Update(sourceChild.GetType() ?? typeof(object), sourceChild, targetChildType, newChild);
                 targetList.Add(sourceChild);
+                _context.Entry(sourceChild).State = EntityState.Added;
             }
 
             Dictionary<Guid, IDsRecord> CollectionToLookup(IEnumerable collection)
